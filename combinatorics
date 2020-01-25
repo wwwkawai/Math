@@ -1,0 +1,3 @@
+1.select m number from 1 to n with repetitions
+we can get the equation x1+x2+...xn=m, the xi represents the number of i we choose, for every xi we need it be positive, so we let Xi=xi+1,
+and the equation become X1+X2+...Xn=m+n, so the answer is C(m,m+n-1) or C(n-1,m+n-1)=(m+n-1)!/(m!(n-1)!).
