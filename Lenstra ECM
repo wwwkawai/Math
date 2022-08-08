@@ -1,0 +1,97 @@
+#include<bits/stdc++.h>
+using namespace std;
+//计算最大公因数
+long long gcd(long long a,long long b){
+    if(b==0)
+        return a;
+    else
+        return gcd(b,a%b);
+}
+
+//扩展欧几里得算法求lamda
+long long exgcd(long long a,long long b){
+    long long r0=a,r1=b;
+    long long s0=1,s1=0;
+    long long t0=0,t1=1;
+    while(1){
+        long long q = r0/r1, r= r0%r1;
+        if(r==0)
+            break;
+        r0=r1;
+        r1=r;
+        long long tmps=s0;
+        s0=s1;
+        s1=tmps-q*s1;
+        long long tmpt=t0;
+        t0=t1;
+        t1=tmpt-q*t1;
+    }
+    return t1;
+}
+//定义加法
+pair<long long,long long> add(pair<long long,long long>p1,pair<long long,long long>p2,long long n,long long a){
+    long long de,di;
+    if(p1==p2){
+        de = (3*p1.first*p1.first+a)%n;
+        di = 2*p1.second%n;
+
+    }else{
+        de  = (p2.second-p1.second)%n;
+        di = (p2.first-p1.first)%n;
+    }
+    if((de%gcd(max(di,n),min(di,n)))!=0) {
+        if(gcd(n,di)!=n)
+            cout<<gcd(n,di)<<'*'<<n/gcd(n,di)<<endl;
+        return {-1, -1};
+    }
+    long long lamda = (exgcd(n,di)%n+n)%n;
+    lamda*=de/gcd(max(di,n),min(di,n));
+    lamda%=n;
+    //long long lamda = de* getX_1(di,n)%n;
+    long long x=((lamda*lamda-p1.first-p2.first)%n+n)%n;
+    long long y=((lamda*(p1.first-x)-p1.second)%n+n)%n;
+    return {x,y};
+}
+//lenstra ecm
+int lenstra(pair<long long,long long> p,long long a,long long b,long long k,long long n){
+    if(gcd(n,4*a*a*a+27*b*b)!=1){
+        cout<<gcd(n,4*a*a*a+27*b*b)<<'*'<<n/gcd(n,4*a*a*a+27*b*b)<<endl;
+        return 0;
+    }
+/*
+//将k用二进制表示
+    vector<int> cnt(32,0);
+    long long m=0;
+    for(int i=0;i<32;i++){
+        cnt[i]=k%2;
+        if(cnt[i])
+            m=i;
+        k/=2;
+    }
+    vector<pair<long long,long long>> pp={p};
+    for(int i=1;i<=m;i++){
+        pp.push_back(add(pp.back(),pp.back(),n,a));
+    }
+    for(int i=0;i<=m;i++){
+        if(cnt[i]){
+            sum=pp[i];
+            for(int j=i+1;j<=m;j++){
+                if(cnt[j]){
+                    sum=add(sum,pp[j],n,a);
+                }
+            }
+        }
+    }*/
+    pair<long long,long long> sum = p;//累加
+    for(int i=1;i<k;i++){
+        sum=add(sum,p,n,a);
+    }
+    return 0;
+}
+
+int main(){
+    long long n,a,b,x,y,k;
+    cin>>n>>a>>b>>x>>y>>k;
+    lenstra({x,y},a,b,k,n);
+    return 0;
+}
