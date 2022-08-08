@@ -1,0 +1,35 @@
+#include<bits/stdc++.h>
+using namespace std;
+int gcd(int a,int b){ //计算最大公因数
+    if(b==0)
+        return a;
+    else
+        return gcd(b,a%b);
+} 
+int f(int x0){      //计算下一个x
+    return x0*x0+1;
+}
+//计算下一个x，并计算差值与n的最大公因数，若不为1则找到。
+int pollard_rho(int x0,int n, int (*f)(int )){
+    vector<int> num;
+    num.push_back(x0);
+    bool find = false;
+    while(!find){
+        int x = f(num.back());
+        for(auto i : num){
+            if(gcd(max(x-i,n),min(x-i,n))!=1) {
+                cout << gcd(max(x - i, n), min(x - i, n)) << '*' << n / gcd(max(x - i, n), min(x - i, n)) << endl;
+                find = true;
+                break;
+            }
+        }
+        num.push_back(x);
+    }
+    return 0;
+}
+int main(){
+    int n,x0;
+    cin>>n>>x0;
+    pollard_rho(x0,n,f);
+    return 0;
+}
