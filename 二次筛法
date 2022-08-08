@@ -1,0 +1,99 @@
+#include<bits/stdc++.h>
+using namespace std;
+//计算最大公因数
+int gcd(int a,int b){
+    if(b==0)
+        return a;
+    else
+        return gcd(b,a%b);
+}
+//计算a^b(mod n)
+long long qp(int a,int b,int n){
+    a%=n;
+    long long res=1;
+    while(b){
+        if(b&1)
+            res*=a;
+        b/=2;
+        a*=a;
+        a%=n;
+        res%=n;
+    }
+    return res;
+}
+//计算勒让德符号筛选素数
+int legendre(int p,int n){
+    return qp(n,(p-1)/2,p);
+}
+//组合t^2-n验证是否构成平方数
+void search(int sqn,vector<vector<int>>& decom,vector<int>& sprime,vector<int>& use,int maxdep,vector<int>& d,int dep,int i,long long num,long long n){
+    if(dep>=maxdep||i>=decom.size()){
+        return ;
+    }
+    if(!use[i]) {
+        search(sqn, decom, sprime, use, maxdep, d, dep, i + 1, num,n);
+        return ;
+    }
+    bool f=true;
+    num*=sqn+i+1;
+    long long tmp=1;
+    for(int j=0;j<sprime.size();j++){
+        d[j]+=decom[i][j];
+        tmp*=qp(sprime[j],d[j]/2, n);
+        tmp%=n;
+        if(d[j]&1)
+            f=false;
+    }
+    if(f){
+        if(gcd(max(n,abs(num-tmp)),min(n,abs(num-tmp)))!=1&&gcd(max(n,abs(num-tmp)),min(n,abs(num-tmp)))!=-1)
+            cout<<gcd(max(n,abs(num-tmp)),min(n,abs(num-tmp)))<<'*'<<n/gcd(max(n,abs(num-tmp)),min(n,abs(num-tmp)))<<endl;
+    }else{
+        search(sqn, decom, sprime, use, maxdep, d, dep+1, i + 1, num,n);
+    }
+    for(int j=0;j<sprime.size();j++){
+        d[j]-=decom[i][j];
+    }
+    search(sqn, decom, sprime, use, maxdep, d, dep, i + 1, num/(sqn+i+1),n);
+    return ;
+}
+//二次筛法
+int quadratic_sieve(int n,int P,int A){
+    int sqn= sqrt(n);
+    vector<int> nums(A,0),use(A,1);
+    for(int i=1;i<=A;i++){
+        nums[i-1]=(sqn+i)*(sqn+i)-n;
+    }
+    vector<int> prime={3,5,7,11,13,17,19,23,29,31,37,41,43,47};
+    vector<int> sprime={2};
+    for(int i=0;i<prime.size();i++){
+        if(legendre(prime[i],n)==1)
+            sprime.push_back(prime[i]);
+    }
+    vector<vector<int>> decom(A,vector<int>(sprime.size(),0));
+    for(int i=0;i<A;i++){
+        int tmp=nums[i];
+        for(int j=0;j<sprime.size();j++) {
+            while (tmp % sprime[j] == 0) {
+                tmp /= sprime[j];
+                decom[i][j]++;
+            }
+        }
+        if(tmp>1)
+            use[i]=0;
+    }
+
+    for(int i=0;i<A;i++) {
+        vector<int> d(sprime.size(),0);
+        if(use[i])
+            search(sqn, decom, sprime, use, 4, d, 0, i, 1, n);
+    }
+    return 0;
+}
+
+
+int main(){
+    int n,P,A;
+    cin>>n>>P>>A;
+    quadratic_sieve(n,P,A);
+    return 0;
+}
