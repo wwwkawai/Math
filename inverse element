@@ -2,7 +2,7 @@ if a*b ≡ 1(mod p), then b is a's inverse element(mod p).
 if and only if gcd(a,p) = 1, then a has inverse element(mod p) 
 we know, when p is prime and gcd(a,p) = 1, we have a^(p-1) ≡ 1(modp), so a's inverse element is a^(p-2)
 solve factorial inverse elements in O(n) time(mod p):
-if we get fact[n]'s inverse element inv[n], then we want to get inv[n-1], we can just calculate it using inv[n]*(n-1)%mod
+if we get fact[n]'s inverse element inv[n], then we want to get inv[n-1], we can just calculate it using inv[n]*n%mod
 void inv( int n ) {
     Fact[ 0 ] = 1;
     for( int i = 1; i <= n; ++i ) Fact[ i ] = Fact[ i - 1 ] * i % Mod;
